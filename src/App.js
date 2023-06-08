@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const { dbConnect } = require("./shared/db");
+const studentRoute = require("./routes/student");
 
-export default App;
+const mentorRoute = require("./routes/mentor");
+const assignMentortoStudent = require("./assignMentortostudent");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.get("/", (req, res) => {
+  res.send("Working fine...");
+});
+app.use("/student", studentRoute);
+app.use("/mentor", mentorRoute);
+app.use("/assignmentor", assignMentortoStudent);
+
+app.listen(process.env.PORT || 3000, async (err) => {
+  await dbConnect();
+  console.log("Started server ");
+  if (err) {
+    console.log(err, "error in starting server");
+  }
+});
